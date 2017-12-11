@@ -1,10 +1,12 @@
 package com.nekonekomap
 
+import android.Manifest
 import android.content.Context
 import android.location.Location
 import android.location.LocationManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.util.Log
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -26,8 +28,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        val mapFragment = supportFragmentManager.findFragmentById(
-                R.id.map) as SupportMapFragment
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         mLocClient = LocationServices.getFusedLocationProviderClient(this)
         Log.e("MapsActivity", "hello world 3")
@@ -45,11 +46,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
+
+        val permissionCheck: Int = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+        if (permissionCheck == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            mLocClient.lastLocation.addOnSuccessListener(this) { location ->
+                Log.e("MapsActivity", "got something" + location.toString())
+            }
+        } else {
+        }
+
         // Add a marker in Sydney and move the camera
 //        val sydney = LatLng(-34.0, 151.0)
-        mLocClient.getLastLocation().addOnSuccessListener(this) { location ->
-            Log.e("MapsActivity", "got something" + location.toString())
-        }
 
 //        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
